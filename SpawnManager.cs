@@ -5,13 +5,16 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject itemPrefab;
-    [SerializeField] private float spawnInterval = 2f;
+    [SerializeField] private float minSpawnInterval = 1f;
+    [SerializeField] private float maxSpawnInterval = 3f;
     [SerializeField] private float spawnXRange = 4f;
 
     private float timer;
+    private float currentSpawnInterval;
 
     void Start()
     {
+        currentSpawnInterval = Random.Range(minSpawnInterval, maxSpawnInterval);
         timer = 0f;
     }
 
@@ -19,9 +22,10 @@ public class SpawnManager : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        if(timer > spawnInterval)
+        if(timer >= currentSpawnInterval)
         {
             SpawnItem();
+            currentSpawnInterval = Random.Range(minSpawnInterval, maxSpawnInterval);
             timer = 0f;
         }
     }

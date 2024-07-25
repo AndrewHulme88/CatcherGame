@@ -6,6 +6,7 @@ public class ItemPickup : MonoBehaviour
 {
     [SerializeField] private int points = 10;
     private GameManager gameManager;
+    private LevelManager levelManager;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -19,5 +20,12 @@ public class ItemPickup : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        levelManager.UpdateCount();
     }
 }
