@@ -2,18 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPickup : MonoBehaviour
+public class BigItemPickup : MonoBehaviour
 {
-    [SerializeField] private int points = 1;
+    [SerializeField] private int points = 10;
     private GameManager gameManager;
     private LevelManager levelManager;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("Player"))
+        if (collision.CompareTag("Player"))
         {
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-            if(gameManager != null )
+            if (gameManager != null)
             {
                 gameManager.UpdateScore(points);
             }
@@ -24,8 +24,5 @@ public class ItemPickup : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
-
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        levelManager.UpdateCount();
     }
 }

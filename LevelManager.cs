@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
     public int currentCount = 20;
+    public string nextSceneName;
 
     private GameManager gameManager;
 
@@ -25,7 +27,7 @@ public class LevelManager : MonoBehaviour
     {
         if(currentCount <= 0)
         {
-            gameManager.NextLevel();
+            NextLevel();
         }
     }
 
@@ -33,5 +35,17 @@ public class LevelManager : MonoBehaviour
     {
         currentCount--;
         gameManager.UpdateCountUI();
+    }
+
+    public void NextLevel()
+    {
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("Next scene name is not set in the LevelManager script!");
+        }
     }
 }

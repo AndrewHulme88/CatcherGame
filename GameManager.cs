@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public int remainingCount;
     public TMP_Text scoreText;
     public TMP_Text countDownText;
-    public string nextSceneName;
+
 
     private LevelManager levelManager;
 
@@ -60,18 +60,6 @@ public class GameManager : MonoBehaviour
         if (countDownText != null)
         {
             countDownText.text = remainingCount.ToString() + " Items Remaining";
-        }
-    }
-
-    public void NextLevel()
-    {
-        if(!string.IsNullOrEmpty(nextSceneName))
-        {
-            SceneManager.LoadScene(nextSceneName);
-        }
-        else
-        {
-            Debug.LogWarning("Next scene name is not set in the GameManager script!");
         }
     }
 }

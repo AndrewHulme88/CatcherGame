@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -8,10 +9,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private float groundCheckDistance = 1f;
+    [SerializeField] private float groundCheckOffsetY = -0.5f;
 
     private Rigidbody2D rb;
     private float moveInput;
-    private RaycastHit2D isGrounded;
+    private bool isGrounded;
 
     private void Awake()
     {
@@ -41,11 +43,13 @@ public class PlayerController : MonoBehaviour
 
     private void CollisionChecks()
     {
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        Vector2 checkPosition = new Vector2(transform.position.x, transform.position.y + groundCheckOffsetY);
+        isGrounded = Physics2D.OverlapCircle(checkPosition, groundCheckDistance, whatIsGround);
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y - groundCheckDistance));
+        Vector2 gizmosPosition = new Vector2(transform.position.x, transform.position.y + groundCheckOffsetY);
+        Gizmos.DrawWireSphere(gizmosPosition, groundCheckDistance);
     }
 }
