@@ -6,16 +6,25 @@ using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
-    public TMP_Text countDownText;
     public int currentCount = 20;
 
     private GameManager gameManager;
+
+    private void Awake()
+    {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
+
+    private void Start()
+    {
+        gameManager.remainingCount = currentCount;
+        gameManager.InitializeCountUI();
+    }
 
     private void Update()
     {
         if(currentCount <= 0)
         {
-            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
             gameManager.NextLevel();
         }
     }
@@ -23,14 +32,6 @@ public class LevelManager : MonoBehaviour
     public void UpdateCount()
     {
         currentCount--;
-        UpdateCountUI();
-    }
-
-    void UpdateCountUI()
-    {
-        if (countDownText != null)
-        {
-            countDownText.text = currentCount.ToString() + " Items Remaining";
-        }
+        gameManager.UpdateCountUI();
     }
 }
