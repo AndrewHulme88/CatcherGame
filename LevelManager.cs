@@ -7,10 +7,15 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+    [SerializeField] private bool isBonusLevel = false;
+    [SerializeField] private float initialTimeLeft = 20f;
+
     public int currentCount = 20;
     public string nextSceneName;
 
     private GameManager gameManager;
+    private float currentTimeLeft;
+    private bool isTimerRunning = false;
 
     private void Awake()
     {
@@ -19,17 +24,57 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        gameManager.remainingCount = currentCount;
-        gameManager.InitializeCountUI();
+        if(!isBonusLevel)
+        {
+            gameManager.timerText.gameObject.SetActive(false);
+            gameManager.remainingCount = currentCount;
+            gameManager.InitializeCountUI();
+        }
+        else
+        {
+            gameManager.timerText.gameObject.SetActive(true);
+            currentTimeLeft = initialTimeLeft;
+            isTimerRunning = true;
+            gameManager.UpdateTimerUI(currentTimeLeft);
+            gameManager.remainingCount = currentCount;
+            gameManager.InitializeCountUI();
+        }
     }
 
     private void Update()
     {
-        if(currentCount <= 0)
+        if(!isBonusLevel) 
         {
-            NextLevel();
+            if (currentCount <= 0)
+            {
+                NextLevel();
+            }            
+        }
+        else
+        {
+            if (currentCount <= 0)
+            {
+                NextLevel();
+            }
+
+            if (isTimerRunning)
+            {
+                if(currentTimeLeft >0)
+                {
+                    currentTimeLeft -= Time.deltaTime;
+                    gameManager.UpdateTimerUI(currentTimeLeft);
+                }
+                else
+                {
+                    currentTimeLeft = 0;
+                    isTimerRunning = false;
+                    NextLevel();
+                }    
+            }
         }
     }
+
+
 
     public void UpdateCount()
     {

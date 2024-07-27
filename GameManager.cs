@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public int remainingCount;
     public TMP_Text scoreText;
     public TMP_Text countDownText;
+    public TMP_Text timerText;
 
 
     private LevelManager levelManager;
@@ -61,5 +62,12 @@ public class GameManager : MonoBehaviour
         {
             countDownText.text = remainingCount.ToString() + " Items Remaining";
         }
+    }
+
+    public void UpdateTimerUI(float timeLeft)
+    {
+        float seconds = Mathf.FloorToInt(timeLeft % 60);
+
+        timerText.text = string.Format("{00}", seconds);
     }
 }
