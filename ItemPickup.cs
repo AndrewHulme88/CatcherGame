@@ -5,6 +5,7 @@ using UnityEngine;
 public class ItemPickup : MonoBehaviour
 {
     [SerializeField] private int points = 1;
+    [SerializeField] private GameObject itemParticles;
     private GameManager gameManager;
     private LevelManager levelManager;
 
@@ -18,14 +19,20 @@ public class ItemPickup : MonoBehaviour
                 gameManager.UpdateScore(points);
             }
 
-            Destroy(this.gameObject);
+            ItemDestroy();
         }
         else
         {
-            Destroy(this.gameObject);
+            ItemDestroy();
         }
 
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         levelManager.UpdateCount();
+    }
+
+    private void ItemDestroy()
+    {
+        Instantiate(itemParticles, transform.position, Quaternion.identity);
+        Destroy(this.gameObject);
     }
 }

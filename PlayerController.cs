@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private float moveInput;
     private bool isGrounded;
-    private bool facingRight = false;
+    private bool facingRight = true;
     private int facingDirection = 1;
 
     private void Awake()
@@ -42,7 +42,22 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("isGrounded", isGrounded);
         anim.SetFloat("yVelocity", rb.velocity.y);
 
-        dustParticles.SetActive(isMoving && isGrounded);
+        var particleSystem = dustParticles.GetComponent<ParticleSystem>();
+
+        if(isMoving && isGrounded)
+        {
+            if(!particleSystem.isEmitting)
+            {
+                particleSystem.Play();
+            }
+        }
+        else
+        {
+            if(particleSystem.isEmitting)
+            {
+                particleSystem.Stop(withChildren: true, stopBehavior: ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
     }
 
     private void Move()
