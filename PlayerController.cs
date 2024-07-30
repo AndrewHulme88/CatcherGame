@@ -6,16 +6,20 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private GameObject dustParticles;
+    [SerializeField] private GameObject landingParticles;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private float groundCheckDistance = 1f;
     [SerializeField] private float groundCheckOffsetY = -0.5f;
+    [SerializeField] private float landingDelay = 0.5f;
 
     private Rigidbody2D rb;
     private Animator anim;
     private float moveInput;
     private bool isGrounded;
+    private bool wasGrounded;
+    private bool canMove = true;
     private bool facingRight = true;
     private int facingDirection = 1;
 
@@ -62,6 +66,12 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        if (!canMove)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            return;
+        }
+
         moveInput = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(moveSpeed * moveInput, rb.velocity.y);
     }
@@ -96,7 +106,27 @@ public class PlayerController : MonoBehaviour
     private void CollisionChecks()
     {
         Vector2 checkPosition = new Vector2(transform.position.x, transform.position.y + groundCheckOffsetY);
+        wasGrounded = isGrounded;
         isGrounded = Physics2D.OverlapCircle(checkPosition, groundCheckDistance, whatIsGround);
+
+        if(!wasGrounded && isGrounded)
+        {
+            TriggerLandingParticles();
+            StartCoroutine(LandingDelay());
+        }
+    }
+
+    private void TriggerLandingParticles()
+    {
+        var landingParticleSystem = landingParticles.GetComponent<ParticleSystem>();
+        landingParticleSystem.Play();
+    }
+
+    private IEnumerator LandingDelay()
+    {
+        canMove = false;
+        yield return new WaitForSeconds(landingDelay);
+        canMove = true;
     }
 
     private void OnDrawGizmos()

@@ -5,6 +5,7 @@ using UnityEngine;
 public class BigItemPickup : MonoBehaviour
 {
     [SerializeField] private int points = 10;
+    [SerializeField] private GameObject itemParticles;
     private GameManager gameManager;
     private LevelManager levelManager;
 
@@ -18,11 +19,17 @@ public class BigItemPickup : MonoBehaviour
                 gameManager.UpdateScore(points);
             }
 
-            Destroy(this.gameObject);
+            ItemDestroy();
         }
         else
         {
-            Destroy(this.gameObject);
+            ItemDestroy();
         }
+    }
+
+    private void ItemDestroy()
+    {
+        Instantiate(itemParticles, transform.position, Quaternion.identity);
+        Destroy(this.gameObject);
     }
 }
