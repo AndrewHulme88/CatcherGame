@@ -1,18 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private GameObject dustParticles;
-    [SerializeField] private GameObject landingParticles;
+    [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private float groundCheckDistance = 1f;
     [SerializeField] private float groundCheckOffsetY = -0.5f;
     [SerializeField] private float landingDelay = 0.5f;
+    [SerializeField] private float cayoteJumpTime = 0.5f;
+    private float cayoteJumpCounter;
+    private bool canHaveCayoteJump;
+
+    [Header("Shooting")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform bulletOrigin;
+    [SerializeField] private float bulletSpeed;
+    [SerializeField] private GameObject shotParticles;
+
+    [Header("Effects")]
+    [SerializeField] private GameObject dustParticles;
+    [SerializeField] private GameObject landingParticles;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -32,10 +43,37 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Move();
-        Jump();
+        JumpController();
+        Shoot();
         CollisionChecks();
         FlipController();
         AnimationController();
+
+        cayoteJumpCounter -= Time.deltaTime;
+
+        if(isGrounded)
+        {
+            canHaveCayoteJump = true;
+        }
+        else
+        {
+            if (canHaveCayoteJump)
+            {
+                canHaveCayoteJump = false;
+                cayoteJumpCounter = cayoteJumpTime;
+            }
+        }
+    }
+
+    private void Shoot()
+    {
+        if(Input.GetButtonDown("Fire1"))
+        {
+            var particleSystem = shotParticles.GetComponent<ParticleSystem>();
+            Instantiate(particleSystem, bulletOrigin.transform.position, Quaternion.identity);
+            GameObject newBullet = Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);
+            newBullet.GetComponent<Bullet>().SetupSpeed(bulletSpeed * facingDirection);
+        }
     }
 
     private void AnimationController()
@@ -95,12 +133,21 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(0, 180, 0);
     }
 
+    private void JumpController()
+    {
+        if(Input.GetButtonDown("Jump"))
+        {
+            if (isGrounded || cayoteJumpCounter > 0)
+            {
+                Jump();
+            }
+        }
+    }
+
     private void Jump()
     {
-        if (isGrounded && Input.GetButtonDown("Jump"))
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
+        canHaveCayoteJump = false;
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
 
     private void CollisionChecks()
