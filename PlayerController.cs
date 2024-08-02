@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform bulletOrigin;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private GameObject shotParticles;
+    [SerializeField] private float shootKickbackTime = 0.5f;
+    private bool canShoot = true;
 
     [Header("Effects")]
     [SerializeField] private GameObject dustParticles;
@@ -44,10 +46,10 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         JumpController();
-        Shoot();
         CollisionChecks();
         FlipController();
         AnimationController();
+        Shoot();
 
         cayoteJumpCounter -= Time.deltaTime;
 
@@ -67,8 +69,10 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        if(Input.GetButtonDown("Fire1"))
+        if(Input.GetButtonDown("Fire1") && canShoot)
         {
+            StartCoroutine(ShootKickbackDelay());
+            anim.SetTrigger("shoot");
             var particleSystem = shotParticles.GetComponent<ParticleSystem>();
             Instantiate(particleSystem, bulletOrigin.transform.position, Quaternion.identity);
             GameObject newBullet = Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);
@@ -174,6 +178,15 @@ public class PlayerController : MonoBehaviour
         canMove = false;
         yield return new WaitForSeconds(landingDelay);
         canMove = true;
+    }
+
+    private IEnumerator ShootKickbackDelay()
+    {
+        canShoot = false;
+        //canMove = false;
+        yield return new WaitForSeconds(shootKickbackTime);
+        canShoot = true;
+        //canMove = true;
     }
 
     private void OnDrawGizmos()

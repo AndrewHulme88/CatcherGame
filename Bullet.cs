@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    [SerializeField] private GameObject hitParticles;
+    [SerializeField] private Transform hitPoint;
+
     private float bulletSpeed;
     private Rigidbody2D rb;
 
@@ -24,6 +27,9 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        var particleSystem = hitParticles.GetComponent<ParticleSystem>();
+        Instantiate(particleSystem, hitPoint.transform.position, Quaternion.identity);
+
         if(collision.CompareTag("Enemy"))
         {
             Destroy(gameObject);
