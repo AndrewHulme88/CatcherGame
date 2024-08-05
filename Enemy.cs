@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private int facingDirection = 1;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private Transform wallCheck;
-    [SerializeField] private float groundCheckDistance = 0.5f;
-    [SerializeField] private float wallCheckDistance = 0.5f;
-    [SerializeField] private LayerMask whatIsGround;
-    [SerializeField] private LayerMask whatToIgnore;
-    [SerializeField] private bool isFacingRight = true;
+    [SerializeField] protected float moveSpeed = 5f;
+    [SerializeField] protected int facingDirection = 1;
+    [SerializeField] protected Transform groundCheck;
+    [SerializeField] protected Transform wallCheck;
+    [SerializeField] protected float groundCheckDistance = 0.5f;
+    [SerializeField] protected float wallCheckDistance = 0.5f;
+    [SerializeField] protected LayerMask whatIsGround;
+    [SerializeField] protected LayerMask whatToIgnore;
+    [SerializeField] protected bool isFacingRight = true;
 
-    private Rigidbody2D rb;
-    private bool wallDetected = false;
-    private bool groundDetected = true;
+    protected Rigidbody2D rb;
+    protected bool wallDetected = false;
+    protected bool groundDetected = true;
 
-    void Start()
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
@@ -31,13 +31,13 @@ public class Enemy : MonoBehaviour
             Flip();
     }
 
-    void Update()
+    protected virtual void Update()
     {
         Patrol();
         CollisionChecks();
     }
 
-    private void Patrol()
+    protected virtual void Patrol()
     {
         rb.velocity = new Vector2(moveSpeed * facingDirection, rb.velocity.y);
 
@@ -47,19 +47,24 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Flip()
+    protected virtual void Flip()
     {
         facingDirection = facingDirection * -1;
         transform.Rotate(0, 180, 0);
     }
 
-    private void CollisionChecks()
+    public virtual void Damage()
+    {
+        Destroy(gameObject);
+    }
+
+    protected virtual void CollisionChecks()
     {
         groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, whatIsGround);
         wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.right * facingDirection, wallCheckDistance, whatIsGround);
     }
 
-    private void OnDrawGizmos()
+    protected virtual void OnDrawGizmos()
     {
         if (groundCheck != null)
         {
