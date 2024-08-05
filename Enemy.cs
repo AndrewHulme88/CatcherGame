@@ -13,14 +13,23 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected LayerMask whatIsGround;
     [SerializeField] protected LayerMask whatToIgnore;
     [SerializeField] protected bool isFacingRight = true;
+    [SerializeField] protected float playerDetectDistance = 10f;
+    [SerializeField] protected LayerMask playerMask;
 
     protected Rigidbody2D rb;
+    protected Animator anim;
     protected bool wallDetected = false;
     protected bool groundDetected = true;
+    protected bool playerDetected;
+    protected GameObject player;
+
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+
+        InvokeRepeating("FindPlayer", 0, 0.5f);
 
         if (groundCheck == null)
             groundCheck = transform;
@@ -31,10 +40,9 @@ public class Enemy : MonoBehaviour
             Flip();
     }
 
-    protected virtual void Update()
+    private void FindPlayer()
     {
-        Patrol();
-        CollisionChecks();
+        player = FindObjectOfType<PlayerController>().gameObject;
     }
 
     protected virtual void Patrol()
@@ -62,6 +70,7 @@ public class Enemy : MonoBehaviour
     {
         groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, whatIsGround);
         wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.right * facingDirection, wallCheckDistance, whatIsGround);
+        playerDetected = Physics2D.Raycast(wallCheck.position, Vector2.right * facingDirection, playerDetectDistance, playerMask);
     }
 
     protected virtual void OnDrawGizmos()
@@ -74,6 +83,7 @@ public class Enemy : MonoBehaviour
         if (wallCheck != null)
         {
             Gizmos.DrawLine(wallCheck.position, new Vector2(wallCheck.position.x + wallCheckDistance * facingDirection, wallCheck.position.y));
+            Gizmos.DrawLine(wallCheck.position, new Vector2(wallCheck.position.x + playerDetectDistance * facingDirection, wallCheck.position.y));
         }
     }
 }
