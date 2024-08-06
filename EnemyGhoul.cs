@@ -8,6 +8,10 @@ public class EnemyGhoul : Enemy
     [SerializeField] private bool isAwake;
     [SerializeField] private float checkRadius = 5f;
     [SerializeField] private float wakeUpDelay = 2f;
+    [SerializeField] private GameObject attackZone;
+    [SerializeField] private float attackTriggerDistance = 3f;
+    [SerializeField] private float spawnHitBoxDelay = 0.2f;
+    [SerializeField] private float removeHitBoxDelay = 1f;
 
 
     protected override void Start()
@@ -20,6 +24,7 @@ public class EnemyGhoul : Enemy
         CollisionChecks();
 
         playerDetected = Physics2D.OverlapCircle(transform.position, checkRadius, playerMask);
+        bool attackPlayer = Physics2D.Raycast(wallCheck.position, Vector2.right * facingDirection, attackTriggerDistance, playerMask);
 
         if(playerDetected && !isAwake && isSpawnType)
         {
@@ -31,6 +36,12 @@ public class EnemyGhoul : Enemy
         {
             Patrol();
             anim.SetFloat("xVelocity", rb.velocity.x);
+
+            if(attackPlayer)
+            {
+                anim.SetTrigger("attack");
+                Invoke("SpawnHitBox", spawnHitBoxDelay);
+            }
         }
     }
 
@@ -38,6 +49,17 @@ public class EnemyGhoul : Enemy
     {
         isAwake = true;
         anim.SetBool("isAwake", isAwake);
+    }
+
+    private void SpawnHitBox()
+    {
+        attackZone.SetActive(true);
+        Invoke("RemoveHitBox", removeHitBoxDelay);
+    }
+
+    private void RemoveHitBox()
+    {
+        attackZone.SetActive(false);
     }
 
     protected override void OnDrawGizmos()
