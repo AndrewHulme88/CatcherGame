@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public int enemyMaxHealth = 1;
+    public int enemyCurrentHealth;
+    [SerializeField] private float enemyDeathDelay = 1f;
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected int facingDirection = 1;
     [SerializeField] protected Transform groundCheck;
@@ -15,6 +18,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected bool isFacingRight = true;
     [SerializeField] protected float playerDetectDistance = 10f;
     [SerializeField] protected LayerMask playerMask;
+    [SerializeField] protected float idleTime = 2f;
 
     protected Rigidbody2D rb;
     protected Animator anim;
@@ -22,10 +26,14 @@ public class Enemy : MonoBehaviour
     protected bool groundDetected = true;
     protected bool playerDetected;
     protected GameObject player;
+    protected float idleTimeCounter;
+    protected bool canMove = true;
 
 
     protected virtual void Start()
     {
+        enemyCurrentHealth = enemyMaxHealth;
+
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
@@ -47,10 +55,20 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Patrol()
     {
-        rb.velocity = new Vector2(moveSpeed * facingDirection, rb.velocity.y);
+        if(idleTimeCounter <= 0 && canMove)
+        {
+            rb.velocity = new Vector2(moveSpeed * facingDirection, rb.velocity.y);
+        }
+        else
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
+
+        idleTimeCounter -= Time.deltaTime;
 
         if(wallDetected || !groundDetected)
         {
+            idleTimeCounter = idleTime;
             Flip();
         }
     }
@@ -62,6 +80,22 @@ public class Enemy : MonoBehaviour
     }
 
     public virtual void Damage()
+    {
+        enemyCurrentHealth--;
+
+        if(enemyCurrentHealth > 0)
+        {
+            anim.SetTrigger("gotHit");
+        }
+        else
+        {
+            canMove = false;
+            anim.SetTrigger("death");
+            Invoke("DestroyEnemy", enemyDeathDelay);
+        }
+    }
+
+    public void DestroyEnemy()
     {
         Destroy(gameObject);
     }
