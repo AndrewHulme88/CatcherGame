@@ -108,6 +108,13 @@ public class PlayerController : MonoBehaviour
     {
         bool isMoving = Mathf.Abs(rb.velocity.x) > 0.1f;
 
+        anim.SetBool("isKnocked", isKnocked);
+
+        if(isKnocked)
+        {
+            return;
+        }
+
         anim.SetBool("isMoving", isMoving);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetFloat("yVelocity", rb.velocity.y);
@@ -221,7 +228,7 @@ public class PlayerController : MonoBehaviour
         isKnocked = true;
         canBeKnocked = false;
 
-        PlayerDamage();
+        //PlayerDamage();
 
         int hitDirection = 0;
         if(transform.position.x > damageDirection.position.x)
