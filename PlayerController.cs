@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Health")]
+    public int playerMaxHealth = 3;
+    public int playerCurrentHealth;
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 10f;
@@ -23,6 +28,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float shootKickbackTime = 0.5f;
     private bool canShoot = true;
 
+    [Header("Knockback")]
+    [SerializeField] private Vector2 knockbackDirection;
+    //[SerializeField] private float knockbackTime = 1f;
+    //[SerializeField] private float knockbackProtectionTime = 1f;
+
     [Header("Effects")]
     [SerializeField] private GameObject dustParticles;
     [SerializeField] private GameObject landingParticles;
@@ -40,6 +50,11 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+    }
+
+    private void Start()
+    {
+        playerCurrentHealth = playerMaxHealth;
     }
 
     void Update()
@@ -183,10 +198,23 @@ public class PlayerController : MonoBehaviour
     private IEnumerator ShootKickbackDelay()
     {
         canShoot = false;
-        //canMove = false;
         yield return new WaitForSeconds(shootKickbackTime);
         canShoot = true;
-        //canMove = true;
+    }
+
+    public void Knockback(Transform damageDirection)
+    {
+        int hitDirection = 0;
+        if(transform.position.x > damageDirection.position.x)
+        {
+            hitDirection = 1;
+        }
+        else if(transform.position.x < damageDirection.position.x)
+        {
+            hitDirection = -1;
+        }
+
+        rb.velocity = new Vector2(knockbackDirection.x * hitDirection, knockbackDirection.y);
     }
 
     private void OnDrawGizmos()
