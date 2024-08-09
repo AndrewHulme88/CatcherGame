@@ -30,8 +30,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Knockback")]
     [SerializeField] private Vector2 knockbackDirection;
-    //[SerializeField] private float knockbackTime = 1f;
-    //[SerializeField] private float knockbackProtectionTime = 1f;
+    [SerializeField] private float knockbackTime = 1f;
+    [SerializeField] private float knockbackProtectionTime = 1f;
+
+    private bool isKnocked;
+    private bool canBeKnocked = true;
 
     [Header("Effects")]
     [SerializeField] private GameObject dustParticles;
@@ -59,11 +62,17 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        AnimationController();
+
+        if(isKnocked)
+        {
+            return;
+        }
+
         Move();
         JumpController();
         CollisionChecks();
         FlipController();
-        AnimationController();
         Shoot();
 
         cayoteJumpCounter -= Time.deltaTime;
@@ -204,6 +213,16 @@ public class PlayerController : MonoBehaviour
 
     public void Knockback(Transform damageDirection)
     {
+        if(!canBeKnocked)
+        {
+            return;
+        }
+
+        isKnocked = true;
+        canBeKnocked = false;
+
+        PlayerDamage();
+
         int hitDirection = 0;
         if(transform.position.x > damageDirection.position.x)
         {
@@ -215,6 +234,29 @@ public class PlayerController : MonoBehaviour
         }
 
         rb.velocity = new Vector2(knockbackDirection.x * hitDirection, knockbackDirection.y);
+
+        Invoke("CancelKnockback", knockbackTime);
+        Invoke("AllowKnockback", knockbackProtectionTime);
+    }
+
+    public void PlayerDamage()
+    {
+        playerCurrentHealth--;
+        
+        if(playerCurrentHealth < 1)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void CancelKnockback()
+    {
+        isKnocked = false;
+    }
+
+    private void AllowKnockback()
+    {
+        canBeKnocked = true;
     }
 
     private void OnDrawGizmos()

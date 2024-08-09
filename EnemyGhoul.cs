@@ -37,8 +37,9 @@ public class EnemyGhoul : Enemy
             Patrol();
             anim.SetFloat("xVelocity", rb.velocity.x);
 
-            if(attackPlayer)
+            if(attackPlayer && canMove)
             {
+                canMove = false;
                 anim.SetTrigger("attack");
                 Invoke("SpawnHitBox", spawnHitBoxDelay);
             }
@@ -60,6 +61,7 @@ public class EnemyGhoul : Enemy
     private void RemoveHitBox()
     {
         attackZone.SetActive(false);
+        canMove = true;
     }
 
     protected override void OnDrawGizmos()
