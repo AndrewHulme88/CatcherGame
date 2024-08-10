@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private LayerMask whatIsGround;
+    [SerializeField] private float wallCheckDistance = 2f;
     [SerializeField] private float groundCheckDistance = 1f;
     [SerializeField] private float groundCheckOffsetY = -0.5f;
     [SerializeField] private float landingDelay = 0.5f;
@@ -146,7 +147,16 @@ public class PlayerController : MonoBehaviour
         }
 
         moveInput = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(moveSpeed * moveInput, rb.velocity.y);
+        float targetVelocityX = moveSpeed * moveInput;
+        Vector2 checkPosition = new Vector2(transform.position.x, transform.position.y + groundCheckOffsetY);
+
+        RaycastHit2D hit = Physics2D.Raycast(checkPosition, Vector2.right * moveInput, wallCheckDistance, whatIsGround);
+        if(hit.collider != null)
+        {
+            targetVelocityX = 0;
+        }
+
+        rb.velocity = new Vector2(targetVelocityX, rb.velocity.y);
     }
 
     private void FlipController()

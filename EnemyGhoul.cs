@@ -31,6 +31,11 @@ public class EnemyGhoul : Enemy
             anim.SetTrigger("spawn");
             Invoke("WakeUp", wakeUpDelay);
         }
+        else if(playerDetected && !isAwake && !isSpawnType)
+        {
+            anim.SetTrigger("wakeUp");
+            Invoke("WakeUp", wakeUpDelay);
+        }
 
         if(isAwake)
         {

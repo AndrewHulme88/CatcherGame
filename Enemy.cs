@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour
     protected GameObject player;
     protected float idleTimeCounter;
     protected bool canMove = true;
+    protected DamagePlayer damagePlayer;
 
 
     protected virtual void Start()
@@ -91,8 +92,17 @@ public class Enemy : MonoBehaviour
         {
             canMove = false;
             anim.SetTrigger("death");
+            IsDead();
             Invoke("DestroyEnemy", enemyDeathDelay);
         }
+    }
+
+    private void IsDead()
+    {
+        damagePlayer = GetComponent<DamagePlayer>();
+        damagePlayer.canDamagePlayer = false;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        GetComponent<Collider2D>().enabled = false;
     }
 
     public void DestroyEnemy()
