@@ -8,6 +8,11 @@ public class EnemyFlamer : Enemy
     [SerializeField] private GameObject attackZone;
     [SerializeField] private float spawnHitBoxDelay = 0.5f;
     [SerializeField] private float removeHitBoxDelay = 1f;
+    [SerializeField] private float deathAnimationDelay = 1f;
+    [SerializeField] private float destroyDeathAnimDelay = 1f;
+    [SerializeField] private GameObject flameFX;
+    [SerializeField] private GameObject deathFXPosition;
+    [SerializeField] private GameObject deathFX;
 
     protected override void Start()
     {
@@ -16,20 +21,33 @@ public class EnemyFlamer : Enemy
 
     void Update()
     {
+        if(isDead)
+        {
+            Invoke("DeathAnimation", deathAnimationDelay);
+        }
+
         CollisionChecks();
 
         if(!playerDetected)
         {
             Patrol();
             anim.SetFloat("xVelocity", rb.velocity.x);
+            anim.SetBool("attack", false);
+            flameFX.SetActive(false);
         }
 
         if(playerDetected)
         {
-            anim.SetTrigger("attack");
             rb.velocity = new Vector2(0, rb.velocity.y);
+            anim.SetBool("attack", true);
+            flameFX.SetActive(true);
             Invoke("SpawnHitBox", spawnHitBoxDelay);
         }
+    }
+
+    private void DeathAnimation()
+    {
+        Instantiate(deathFX, deathFXPosition.transform.position, Quaternion.identity);
     }
 
     private void SpawnHitBox()
