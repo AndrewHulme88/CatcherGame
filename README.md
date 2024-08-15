@@ -1,2 +1,2 @@
 # CatcherGame
-2D item catching game in Unity
+2D shooter game in Unity
