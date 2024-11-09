@@ -238,7 +238,7 @@ public class PlayerController : MonoBehaviour
         isKnocked = true;
         canBeKnocked = false;
 
-        //PlayerDamage();
+        PlayerDamage();
 
         int hitDirection = 0;
         if(transform.position.x > damageDirection.position.x)
