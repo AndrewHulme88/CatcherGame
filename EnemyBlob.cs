@@ -10,6 +10,7 @@ public class EnemyBlob : Enemy
     private bool isDropping = false;
     private enum EnemyState { Ceiling, Dropping, Ground }
     private EnemyState enemyState = EnemyState.Ceiling;
+    private Vector2 moveDirection = Vector2.right;
 
     protected override void Start()
     {
@@ -28,6 +29,17 @@ public class EnemyBlob : Enemy
 
     private void MoveOnCeiling()
     {
-        
+        rb.velocity = moveDirection * moveSpeed;
+
+        if (wallDetected || !groundDetected)
+        {
+            idleTimeCounter = idleTime;
+            Flip();
+        }
+    }
+
+    private void DetectPlayerBelow()
+    {
+
     }
 }
